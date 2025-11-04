@@ -694,8 +694,8 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 						}
 						if (finalPhase) {
 							LeafiaColor col = new LeafiaColor(colorCatalyst);
-							DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue,250);
-							blast.emit(new Vec3d(pos).add(0.5,0.5,0.5),new Vec3d(0,1,0),world.provider.getDimension(),20);
+							DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue,20);
+							blast.emit(new Vec3d(pos).add(0.5,0.5,0.5),new Vec3d(0,1,0),world.provider.getDimension(),200);
 						}
 						if (explosionIn <= 0 && exp != null) {
 							PacketDispatcher.wrapper.sendToAllAround(
