@@ -1,7 +1,7 @@
 package com.hbm.interfaces;
 
 import com.hbm.modules.ItemHazardModule;
-import com.leafia.dev.MultiRad;
+import com.leafia.dev.hazards.MultiRad;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 

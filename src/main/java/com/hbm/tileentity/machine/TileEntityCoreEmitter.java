@@ -97,6 +97,7 @@ public class TileEntityCoreEmitter extends DFCBaseTE implements ITickable, IEner
 				//continue;
 				//break;
 				result.hitVec = new Vec3d(te.getPos()); // align to the center
+				((TileEntityCore) te).componentPositions.add(pos);
 				return process.RETURN(result);
 			}
 

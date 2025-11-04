@@ -1,6 +1,4 @@
-package com.leafia.contents.control;
-
-import com.leafia.dev.MultiRad;
+package com.leafia.dev.hazards;
 
 public class ItemRads {
 	public static MultiRad cobalt60 = new MultiRad(0,30,30,60,0).multiply(1/3f);

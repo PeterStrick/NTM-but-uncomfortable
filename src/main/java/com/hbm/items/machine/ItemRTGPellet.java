@@ -3,7 +3,7 @@ package com.hbm.items.machine;
 import com.hbm.items.special.ItemHazard;
 import com.hbm.util.BobMathUtil;
 import com.hbm.util.I18nUtil;
-import com.leafia.dev.MultiRad;
+import com.leafia.dev.hazards.MultiRad;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;

@@ -1,4 +1,4 @@
-package com.leafia.dev;
+package com.leafia.dev.hazards;
 
 import com.hbm.config.RadiationConfig;
 import com.hbm.handler.ArmorUtil;

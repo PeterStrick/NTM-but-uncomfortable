@@ -3,6 +3,10 @@ package com.hbm.blocks.network.energy;
 import com.hbm.blocks.ILookOverlay;
 import com.hbm.blocks.ITooltipProvider;
 import com.hbm.blocks.ModBlocks;
+import com.hbm.inventory.control_panel.ControlEventSystem;
+import com.hbm.inventory.control_panel.DataValue;
+import com.hbm.inventory.control_panel.DataValueFloat;
+import com.hbm.inventory.control_panel.IControllable;
 import com.hbm.lib.Library;
 import com.hbm.main.MainRegistry;
 import com.hbm.tileentity.INBTPacketReceiver;
@@ -33,7 +37,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITooltipProvider {
 	
@@ -120,7 +126,7 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 	}
 
 	@Optional.InterfaceList({@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")})
-	public static class TileEntityCableGauge extends TileEntityCableBaseNT implements INBTPacketReceiver, SimpleComponent {
+	public static class TileEntityCableGauge extends TileEntityCableBaseNT implements INBTPacketReceiver, SimpleComponent, IControllable {
 
 		private long lastMeasurement = 10;
 		private long deltaSecond = 0;
@@ -165,6 +171,35 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 		@Callback(doc = "getPowerPerS(); returns the power(long) per s traveling through the gauge.")
 		public Object[] getPowerPerS(Context context, Arguments args) {
 			return new Object[] {deltaLastSecond};
+		}
+
+		@Override
+		public Map<String,DataValue> getQueryData() {
+			Map<String,DataValue> map = new HashMap<>();
+			map.put("powerPerS",new DataValueFloat(deltaLastSecond));
+			return map;
+		}
+
+		@Override
+		public BlockPos getControlPos() {
+			return getPos();
+		}
+
+		@Override
+		public World getControlWorld() {
+			return getWorld();
+		}
+
+		@Override
+		public void validate(){
+			super.validate();
+			ControlEventSystem.get(world).addControllable(this);
+		}
+
+		@Override
+		public void invalidate(){
+			super.invalidate();
+			ControlEventSystem.get(world).removeControllable(this);
 		}
 	}
 }

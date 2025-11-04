@@ -95,8 +95,10 @@ public abstract class DFCBaseTE extends TileEntityMachineBase implements LeafiaP
 			if (result == null)
 				return process.CONTINUE();
 			TileEntity te = world.getTileEntity(current.posSnapped);
-			if(te instanceof TileEntityCore)
-				return process.RETURN((TileEntityCore)te);
+			if(te instanceof TileEntityCore) {
+				((TileEntityCore) te).componentPositions.add(pos);
+				return process.RETURN((TileEntityCore) te);
+			}
 			return process.BREAK();
 		});
 		return lastGetCore;

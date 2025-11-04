@@ -287,27 +287,30 @@ public class LeafiaParticlePacket extends RecordablePacket {
 		public float red;
 		public float green;
 		public float blue;
+		public int amount;
 		public DFCBlastParticle() {}
-		public DFCBlastParticle(float red,float green,float blue) {
+		public DFCBlastParticle(float red,float green,float blue,int amount) {
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
+			this.amount = amount;
 		}
 		@Override
 		protected LeafiaParticle fromBits(LeafiaBuf buf,NBTTagCompound nbt) {
-			return new DFCBlastParticle(buf.readFloat(),buf.readFloat(),buf.readFloat());
+			return new DFCBlastParticle(buf.readFloat(),buf.readFloat(),buf.readFloat(),buf.readInt());
 		}
 		@Override
 		protected void toBits(LeafiaBuf buf) {
 			buf.writeFloat(red);
 			buf.writeFloat(green);
 			buf.writeFloat(blue);
+			buf.writeInt(amount);
 		}
 		@Override
 		@SideOnly(Side.CLIENT)
 		protected void emit(NBTTagCompound nbt) {
 			World world = Minecraft.getMinecraft().world;
-			for (int i = 0; i < 250; i++) {
+			for (int i = 0; i < amount; i++) {
 				ParticleDFC particle = new ParticleDFC(
 						world,
 						nbt.getDouble("posX"),

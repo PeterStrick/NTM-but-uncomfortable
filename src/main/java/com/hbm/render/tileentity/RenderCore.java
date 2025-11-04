@@ -5,6 +5,7 @@ import com.hbm.lib.RefStrings;
 import com.hbm.main.ResourceManager;
 import com.hbm.render.RenderSparks;
 import com.hbm.render.amlfrom1710.AdvancedModelLoader;
+import com.hbm.render.amlfrom1710.CompositeBrush;
 import com.hbm.render.amlfrom1710.IModelCustom;
 import com.hbm.render.amlfrom1710.Vec3;
 import com.hbm.render.misc.BeamPronter;
@@ -13,19 +14,24 @@ import com.hbm.render.misc.BeamPronter.EnumWaveType;
 import com.hbm.tileentity.machine.TileEntityCore;
 import com.hbm.tileentity.machine.TileEntityCore.Cores;
 import com.hbm.tileentity.machine.TileEntityCore.DFCShock;
+import com.leafia.dev.math.FiaMatrix;
+import com.leafia.dev.math.FiaMatrix.RotationOrder;
 import com.leafia.transformer.LeafiaGls;
 import com.llib.math.LeafiaColor;
 import com.llib.math.MathLeafia;
 import com.llib.technical.LeafiaEase;
 import com.llib.technical.LeafiaEase.Direction;
 import com.llib.technical.LeafiaEase.Ease;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
@@ -146,6 +152,67 @@ public class RenderCore extends TileEntitySpecialRenderer<TileEntityCore> {
 		GL11.glPopMatrix();
 	}
 
+	public void renderDraconic(FiaMatrix face,double scale,double distance,float partialTicks) {
+		int segments = 6;
+		double startRadius = scale*0.5;
+		double endRadius = 0.3;
+		int resolution = 8;
+		bindTexture(new ResourceLocation(RefStrings.MODID,"textures/models/leafia/tomblast_desat.png"));
+		//CompositeBrush brush = CompositeBrush.instance;
+		//brush.startDrawingQuads();
+
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder buf = tessellator.getBuffer();
+
+		buf.begin(GL11.GL_QUADS,DefaultVertexFormats.POSITION_TEX_COLOR);
+		GlStateManager.shadeModel(GL11.GL_SMOOTH);
+
+		GlStateManager.matrixMode(GL11.GL_TEXTURE);
+		GlStateManager.pushMatrix();
+		GlStateManager.loadIdentity();
+
+		float movement = (Minecraft.getMinecraft().player.ticksExisted + partialTicks) * 0.005F * 10;
+		GL11.glTranslatef(0, movement, 0);
+
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+		for (int i = 0; i < segments; i++) {
+			double ratio0 = i/(double)segments;
+			double ratio1 = (i+1)/(double)segments;
+			FiaMatrix mat0 = face.translate(0,0,-distance*ratio0);
+			FiaMatrix mat1 = face.translate(0,0,-distance*ratio1);
+			double ratio0r = Math.pow(ratio0,0.5);
+			double ratio1r = Math.pow(ratio1,0.5);
+			double radius0 = startRadius+(endRadius-startRadius)*ratio0r;
+			double radius1 = startRadius+(endRadius-startRadius)*ratio1r;
+			for (int j = 0; j < resolution; j++) {
+				float ratioAngle0 = j/(float)resolution;
+				float ratioAngle1 = (j+1)/(float)resolution;
+				float angle0 = ratioAngle0*360;
+				float angle1 = ratioAngle1*360;
+				FiaMatrix rot00 = mat0.rotate(RotationOrder.XYZ,0,0,angle0).translate(0,radius0,0);
+				FiaMatrix rot01 = mat0.rotate(RotationOrder.XYZ,0,0,angle1).translate(0,radius0,0);
+				FiaMatrix rot10 = mat1.rotate(RotationOrder.XYZ,0,0,angle0).translate(0,radius1,0);
+				FiaMatrix rot11 = mat1.rotate(RotationOrder.XYZ,0,0,angle1).translate(0,radius1,0);
+				//brush.addVertexWithUV(rot10.getX(),rot10.getY(),rot10.getZ(),0,1);
+				//brush.addVertexWithUV(rot11.getX(),rot11.getY(),rot11.getZ(),1,1);
+				//brush.addVertexWithUV(rot01.getX(),rot01.getY(),rot01.getZ(),1,0);
+				//brush.addVertexWithUV(rot00.getX(),rot00.getY(),rot00.getZ(),0,0);
+				buf.pos(rot10.getX(),rot10.getY(),rot10.getZ()).tex(0,1).color(0.173f,0.549f,0.788f,(float)ratio1).endVertex();
+				buf.pos(rot11.getX(),rot11.getY(),rot11.getZ()).tex(1,1).color(0.173f,0.549f,0.788f,(float)ratio1).endVertex();
+				buf.pos(rot01.getX(),rot01.getY(),rot01.getZ()).tex(1,0).color(0.173f,0.549f,0.788f,(float)ratio0).endVertex();
+				buf.pos(rot00.getX(),rot00.getY(),rot00.getZ()).tex(0,0).color(0.173f,0.549f,0.788f,(float)ratio0).endVertex();
+			}
+		}
+		//brush.draw();
+		tessellator.draw();
+		GlStateManager.shadeModel(GL11.GL_FLAT);
+		GlStateManager.matrixMode(GL11.GL_TEXTURE);
+		GlStateManager.loadIdentity();
+		GlStateManager.popMatrix();
+
+		GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+	}
+
 	public void renderOrb(TileEntityCore core, double x, double y, double z, float partialTicks) {
 
 		GL11.glPushMatrix();
@@ -168,24 +235,26 @@ public class RenderCore extends TileEntitySpecialRenderer<TileEntityCore> {
 			scale *= (float) ease.get(ease.get(percent),1,0);
 			rot = ease.get(percent)*1000;
 		}
+		GlStateManager.disableCull();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,240F,240F);
+		GlStateManager.disableLighting();
+		int colorC = core.colorCatalyst;
+		float rC = (colorC>>16&255)/255F;
+		float gC = (colorC>>8&255)/255F;
+		float bC = (colorC&255)/255F;
+
 		GL11.glScalef(scale,scale,scale);
 
 		GlStateManager.enableCull();
-		GlStateManager.disableLighting();
 		bindTexture(new ResourceLocation(RefStrings.MODID,"textures/solid_emissive.png")); // shader fix
-		GlStateManager.disableTexture2D();
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit,240F,240F);
+		//GlStateManager.disableTexture2D();
 
 
-		GlStateManager.enableBlend();
-		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE);
 		if (core.ringAlpha > 0) {
 			GlStateManager.pushMatrix();
 			GlStateManager.disableCull();
-			int colorC = core.colorCatalyst;
-			float rC = (colorC>>16&255)/255F;
-			float gC = (colorC>>8&255)/255F;
-			float bC = (colorC&255)/255F;
 			GlStateManager.scale(0.025f,0.025f,0.025f);
 			GlStateManager.color(rC,gC,bC,core.ringAlpha);
 			GlStateManager.pushMatrix();
@@ -263,15 +332,30 @@ public class RenderCore extends TileEntitySpecialRenderer<TileEntityCore> {
 			LeafiaGls.popMatrix();
 		}
 
-
-		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 		GL11.glPopMatrix();
+
+		if (core.client_type == Cores.ams_core_wormhole) {
+			LeafiaGls.disableCull();
+			GlStateManager.color(rC,gC,bC,1);
+			GlStateManager.disableAlpha();
+			GlStateManager.depthMask(false);
+
+			for (BlockPos pos : core.prevComponentPositions) {
+				Vec3d relative = new Vec3d(pos.subtract(core.getPos()));
+				FiaMatrix mat = new FiaMatrix(new Vec3d(0,0,0),relative);
+				renderDraconic(mat.translate(0,0,-2),scale,relative.length()-2.5,partialTicks);
+			}
+			LeafiaGls.enableCull();
+			GlStateManager.enableAlpha();
+			GlStateManager.depthMask(true);
+		}
+		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
 		GlStateManager.disableBlend();
 		GlStateManager.enableLighting();
-		GlStateManager.enableTexture2D();
+		//GlStateManager.enableTexture2D();
 		GL11.glPopMatrix();
 	}
 	private void renderFlash(float scale, double intensity, double alpha, float r, float g, float b) {

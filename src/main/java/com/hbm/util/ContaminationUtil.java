@@ -389,20 +389,23 @@ public class ContaminationUtil {
 			} else{
 				nbt = new NBTTagCompound();
 			}
-			float prevActivation = 0;
-			if(nbt.hasKey(NTM_NEUTRON_NBT_KEY)){
-				prevActivation = nbt.getFloat(NTM_NEUTRON_NBT_KEY);
-			}
+			if (RadiationConfig.neutronActivation) {
+				float prevActivation = 0;
+				if (nbt.hasKey(NTM_NEUTRON_NBT_KEY)) {
+					prevActivation = nbt.getFloat(NTM_NEUTRON_NBT_KEY);
+				}
 
-			if(prevActivation + rad == 0)
-				return;
+				if (prevActivation+rad == 0)
+					return;
 
-			float newActivation = prevActivation * decay + (rad / stack.getCount());
-			if(prevActivation * decay + rad < 0.0001F || (rad <= 0 && newActivation < 0.001F )){
+				float newActivation = prevActivation*decay+(rad/stack.getCount());
+				if (prevActivation*decay+rad < 0.0001F || (rad <= 0 && newActivation < 0.001F)) {
+					nbt.removeTag(NTM_NEUTRON_NBT_KEY);
+				} else {
+					nbt.setFloat(NTM_NEUTRON_NBT_KEY,newActivation);
+				}
+			} else
 				nbt.removeTag(NTM_NEUTRON_NBT_KEY);
-			} else {
-				nbt.setFloat(NTM_NEUTRON_NBT_KEY, newActivation);
-			}
 			if(nbt.isEmpty()){
 				stack.setTagCompound(null);
 			} else {

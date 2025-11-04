@@ -3,7 +3,7 @@ package com.hbm.items.bomb;
 import com.hbm.items.special.ItemHazard;
 import com.hbm.main.MainRegistry;
 import com.hbm.util.I18nUtil;
-import com.leafia.dev.MultiRad.RadiationType;
+import com.leafia.dev.hazards.MultiRad.RadiationType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

@@ -135,6 +135,8 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 	public BlockPos jammerPos = null;
 	public static double failsafeLevel = 250000000;
 	public static double maxEnergy = 100_000; // 1PSPK or 5EHE
+	public List<BlockPos> componentPositions = new ArrayList<>(); // for local rendering
+	public List<BlockPos> prevComponentPositions = new ArrayList<>(); // for local rendering
 
 	public double incomingSpk = 0;
 	public double expellingSpk = 0;
@@ -264,6 +266,9 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 	public int colorCatalyst = 0xFFFFFF;
 	@Override
 	public void update() {
+		prevComponentPositions.clear();
+		prevComponentPositions.addAll(componentPositions);
+		componentPositions.clear();
 		if (destroyed) return;
 		if (!world.isRemote) {
 			lastStabilizers = stabilizers;
@@ -603,7 +608,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 								new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 400)
 						);
 						LeafiaColor col = new LeafiaColor(colorCatalyst);
-						DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue);
+						DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue,250);
 						blast.emit(new Vec3d(pos).add(0.5,0.5,0.5),new Vec3d(0,1,0),world.provider.getDimension(),200);
 
 						ExplosionNT nt = new ExplosionNT(world,null,pos.getX()+0.5f, pos.getY()+0.5f, pos.getZ()+0.5f,50);
@@ -683,6 +688,14 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 							nt.addAttrib(ExAttrib.FIRE);
 							nt.addAttrib(ExAttrib.DFC_FALL);
 							nt.explode();
+							LeafiaColor col = new LeafiaColor(colorCatalyst);
+							DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue,250);
+							blast.emit(new Vec3d(pos).add(0.5,0.5,0.5),new Vec3d(0,1,0),world.provider.getDimension(),200);
+						}
+						if (finalPhase) {
+							LeafiaColor col = new LeafiaColor(colorCatalyst);
+							DFCBlastParticle blast = new DFCBlastParticle((float)col.red,(float)col.green,(float)col.blue,250);
+							blast.emit(new Vec3d(pos).add(0.5,0.5,0.5),new Vec3d(0,1,0),world.provider.getDimension(),20);
 						}
 						if (explosionIn <= 0 && exp != null) {
 							PacketDispatcher.wrapper.sendToAllAround(
@@ -1240,7 +1253,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 						int type = (int) value;
 						if (type == 0 || type == 1) {
 							if (meltdownSFX != null) meltdownSFX.stopSound();
-							if (explosionsSFX != null) explosionsSFX.stopSound();
+							if (overloadSFX != null && type == 1) overloadSFX.stopSound();
 							if (type == 0 && meltdownSFX != null) meltdownSFX.startSound();
 							if (type == 1 && extinguishSFX != null) extinguishSFX.startSound();
 							if (type == 1) LeafiaDebug.debugLog(world,"STOP: 1");

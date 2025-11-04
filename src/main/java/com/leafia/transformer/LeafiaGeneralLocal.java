@@ -71,6 +71,6 @@ public class LeafiaGeneralLocal {
 		splash.add("Extra information on F3 debug screen! Did you know?");
 		splash.add("This mod sends string characters in just 5 bits!");
 		splash.add("zally jumpscare");
-		splash.add("Computer core community nowadays is really toxic!");
+		splash.add("Core game community nowadays is really toxic!");
 	}
 }

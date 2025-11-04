@@ -48,7 +48,7 @@ import com.hbm.main.MainRegistry;
 import com.hbm.potion.HbmPotion;
 import com.hbm.tileentity.machine.rbmk.IRBMKFluxReceiver.NType;
 import com.hbm.util.EnchantmentUtil;
-import com.leafia.contents.control.ItemRads;
+import com.leafia.dev.hazards.ItemRads;
 import com.leafia.contents.control.fuel.nuclearfuel.LeafiaRodItem;
 import com.leafia.contents.gear.ItemGasSensor;
 import com.leafia.contents.gear.detonator_laser.ItemLaserDetonator;
@@ -88,7 +88,7 @@ import java.util.List;
 
 import static com.leafia.contents.control.fuel.nuclearfuel.LeafiaRodItem.ItemType.*;
 import static com.leafia.contents.control.fuel.nuclearfuel.LeafiaRodItem.Purity.*;
-import static com.leafia.dev.MultiRad.RadiationType.*;
+import static com.leafia.dev.hazards.MultiRad.RadiationType.*;
 
 public class ModItems {
 	

@@ -136,12 +136,9 @@ import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.chunk.RenderChunk;
@@ -1035,12 +1032,13 @@ public class ModEventHandlerClient {
 			GL20.glUniform1i(GL20.glGetUniformLocation(HbmShaderManager.flashlightWorld, "lightingEnabled"), 1);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void renderTick(RenderTickEvent e){
 		if (e.phase == Phase.START) {
 			LeafiaGls.resetStacks();
 		}
+
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player != null) {
 			if(player.getHeldItemMainhand().getItem() instanceof ItemSwordCutter && ItemSwordCutter.clicked){
@@ -1847,6 +1845,7 @@ public class ModEventHandlerClient {
 
 	@SubscribeEvent
 	public void onOverlayRender(RenderGameOverlayEvent.Pre event) {
+
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		if(event.getType() == ElementType.CROSSHAIRS && player.getHeldItemMainhand().getItem() == Armory.gun_supershotgun && !ItemGunShotty.hasHookedEntity(player.world, player.getHeldItemMainhand())) {
 			float x1 = ItemGunShotty.prevScreenPos.x + (ItemGunShotty.screenPos.x - ItemGunShotty.prevScreenPos.x) * event.getPartialTicks();

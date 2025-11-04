@@ -2,8 +2,8 @@ package com.hbm.items.special;
 
 import com.hbm.interfaces.IItemHazard;
 import com.hbm.modules.ItemHazardModule;
-import com.leafia.dev.MultiRad;
-import com.leafia.dev.MultiRad.RadiationType;
+import com.leafia.dev.hazards.MultiRad;
+import com.leafia.dev.hazards.MultiRad.RadiationType;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
