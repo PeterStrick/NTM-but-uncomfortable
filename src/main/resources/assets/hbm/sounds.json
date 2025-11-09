@@ -322,5 +322,6 @@
   "external.mechcrafting_weld": { "category": "block", "sounds": ["hbm:external/mechcrafting_weld"]},
   "external.overload": { "category": "block", "sounds": ["hbm:external/1205987156"]},
   "external.longexplosion": { "category": "block", "sounds": ["hbm:external/178962800"]},
-  "external.actualexplosion": { "category": "block", "sounds": ["hbm:external/169628396"]}
+  "external.actualexplosion": { "category": "block", "sounds": ["hbm:external/169628396"]},
+  "external.glitch_alpha10302": { "category": "block", "sounds": ["hbm:external/glitch_alpha10302"]}
 }

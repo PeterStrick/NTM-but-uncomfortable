@@ -3,6 +3,7 @@ package com.leafia.dev;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 
@@ -21,5 +22,13 @@ public class LeafiaUtil {
 	// For server. Stupid minecraft has SideOnly(Side.CLIENT) on the constructor so this is a bypass to that
 	public static AxisAlignedBB createAABB(Vec3d min,Vec3d max) {
 		return new AxisAlignedBB(min.x,min.y,min.z,max.x,max.y,max.z);
+	}
+
+	public static AxisAlignedBB getAABBRadius(Vec3d center,double radius) {
+		return new AxisAlignedBB(center.x-radius,center.y-radius,center.z-radius,center.x+radius,center.y+radius,center.z+radius);
+	}
+
+	public static Vec3d getBlockPosCenter(BlockPos pos) {
+		return new Vec3d(pos).add(0.5,0.5,0.5);
 	}
 }

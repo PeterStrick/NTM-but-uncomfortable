@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
@@ -67,6 +68,23 @@ public class RenderCore extends TileEntitySpecialRenderer<TileEntityCore> {
 
 			renderOrb(core, 0, 0, 0, partialTicks);
 			GL11.glPopMatrix();
+			if (core.client_type == Cores.glitch) {
+				GlStateManager.matrixMode(GL11.GL_TEXTURE);
+				GlStateManager.loadIdentity();
+
+				EntityPlayer player = Minecraft.getMinecraft().player;
+				Vec3d playerPos = new Vec3d(player.posX,player.posY,player.posZ);
+				Vec3d corePos = new Vec3d(core.getPos()).add(0.5,0.5,0.5);
+
+				double distance = corePos.distanceTo(playerPos);
+				float modifier = (float)Math.pow(MathHelper.clamp(1 - (distance - 3) / 125, 0, 1), 3);
+				float modifier2 = (float)Math.pow(MathHelper.clamp(1 - (distance - 3) / 125, 0, 1), 12);
+
+				GL11.glTranslatef((float)core.getWorld().rand.nextGaussian()*100*modifier2,(float)core.getWorld().rand.nextGaussian()*100*modifier2,(float)core.getWorld().rand.nextGaussian()*100*modifier2);
+
+				GlStateManager.matrixMode(GL11.GL_MODELVIEW);
+				GL11.glTranslatef((core.getWorld().rand.nextFloat()-0.5f)*modifier,(core.getWorld().rand.nextFloat()-0.5f)*modifier,(core.getWorld().rand.nextFloat()-0.5f)*modifier);
+			}
 		}
 		if (core.jammerPos != null) {
 			GL11.glPushMatrix();
@@ -278,24 +296,24 @@ public class RenderCore extends TileEntitySpecialRenderer<TileEntityCore> {
 		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE);
 
 
-		if (core.client_type == Cores.ams_core_eyeofharmony) {
+		if (core.client_type == Cores.ams_core_eyeofharmony || core.client_type == Cores.glitch) {
 			GL11.glScalef(0.5F,0.5F,0.5F);
-			GL11.glPushMatrix();
-			GL11.glRotatef(core.getWorld().rand.nextFloat()*360,1,0,0);
-			GL11.glRotatef(core.getWorld().rand.nextFloat()*360,0,1,0);
-			GL11.glRotatef(core.getWorld().rand.nextFloat()*360,0,0,1);
+			//GL11.glPushMatrix();
+			//GL11.glRotatef(core.getWorld().rand.nextFloat()*360,1,0,0);
+			//GL11.glRotatef(core.getWorld().rand.nextFloat()*360,0,1,0);
+			//GL11.glRotatef(core.getWorld().rand.nextFloat()*360,0,0,1);
 		}
 		for (int i = 6; i <= 10; i++) {
 			GL11.glPushMatrix();
 			GL11.glScalef(i * 0.1F, i * 0.1F, i * 0.1F);
-			if (core.client_type == Cores.ams_core_eyeofharmony)
+			if (core.client_type == Cores.ams_core_eyeofharmony || core.client_type == Cores.glitch)
 				deformSphere[core.getWorld().rand.nextInt(10)].renderAll();
 			else
 				ResourceManager.sphere_ruv.renderAll();
 			GL11.glPopMatrix();
 		}
-		if (core.client_type == Cores.ams_core_eyeofharmony) {
-			GL11.glPopMatrix();
+		if (core.client_type == Cores.ams_core_eyeofharmony || core.client_type == Cores.glitch) {
+			//GL11.glPopMatrix();
 			GL11.glScalef(2F,2F,2F);
 		}
 		GL11.glPopMatrix();

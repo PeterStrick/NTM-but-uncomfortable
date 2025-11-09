@@ -441,7 +441,7 @@ public class LeafiaRodItem extends ItemHazard implements IHasCustomModel, Leafia
 					}
 				} else {
 					timer = 90;
-					data.setInteger("spillage",data.getInteger("spillage")-1);
+					data.setInteger("spillage",Math.max(data.getInteger("spillage")-1,0));
 				}
 				if (timer != initial)
 					data.setInteger("generosityTimer", timer);

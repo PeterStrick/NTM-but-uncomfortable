@@ -319,6 +319,7 @@ public final class HBMSoundEvents {
 	public static SoundEvent overload;
 	public static SoundEvent longexplosion;
 	public static SoundEvent actualexplosion;
+	public static SoundEvent glitch_alpha10302;
 	
 	
 	public static void init() {
@@ -590,6 +591,7 @@ public final class HBMSoundEvents {
 		overload = register("external.overload");
 		longexplosion = register("external.longexplosion");
 		actualexplosion = register("external.actualexplosion");
+		glitch_alpha10302 = register("external.glitch_alpha10302");
 		
 		geigerSounds = new SoundEvent[]{geiger1, geiger2, geiger3, geiger4, geiger5, geiger6, geiger7, geiger8};
 		voiceSounds = new SoundEvent[]{voices1, voices2, voices3, voices4, voices5, voices6, voices7, voices8};

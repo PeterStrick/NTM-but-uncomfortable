@@ -21,13 +21,13 @@ import com.hbm.packet.PacketDispatcher;
 import com.hbm.sound.AudioWrapper;
 import com.hbm.tileentity.TileEntityMachineBase;
 import com.leafia.CommandLeaf;
-import com.leafia.LeafiaHelper;
 import com.leafia.contents.effects.folkvangr.EntityNukeFolkvangr.VacuumInstance;
 import com.leafia.contents.effects.folkvangr.particles.ParticleFleijaVacuum;
 import com.leafia.contents.effects.folkvangr.visual.EntityCloudFleijaRainbow;
 import com.leafia.contents.machines.powercores.dfc.particles.ParticleEyeOfHarmony;
 import com.leafia.dev.LeafiaDebug;
 import com.leafia.dev.LeafiaDebug.Tracker;
+import com.leafia.dev.LeafiaUtil;
 import com.leafia.dev.container_utility.LeafiaPacket;
 import com.leafia.dev.container_utility.LeafiaPacketReceiver;
 import com.leafia.dev.custompacket.LeafiaCustomPacket;
@@ -35,7 +35,6 @@ import com.leafia.dev.custompacket.LeafiaCustomPacketEncoder;
 import com.leafia.dev.optimization.LeafiaParticlePacket.DFCBlastParticle;
 import com.leafia.dev.optimization.bitbyte.LeafiaBuf;
 import com.leafia.passive.LeafiaPassiveLocal;
-import com.leafia.passive.LeafiaPassiveServer;
 import com.llib.exceptions.LeafiaDevFlaw;
 import com.leafia.dev.math.FiaMatrix;
 import com.llib.math.LeafiaColor;
@@ -54,7 +53,6 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -76,7 +74,9 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 		ams_core_wormhole(HBMSoundEvents.dfc_tw, (intended,distance) ->
 				Math.pow(MathHelper.clamp(1 - (distance - 3) / 40, 0, 1), 2)),
 		ams_core_eyeofharmony(HBMSoundEvents.dfc_eoh, (intended,distance) ->
-				Math.pow(MathHelper.clamp(1 - (distance - 3) / 150, 0, 1), 3));
+				Math.pow(MathHelper.clamp(1 - (distance - 3) / 150, 0, 1), 3)),
+		glitch(HBMSoundEvents.glitch_alpha10302, (intended,distance) ->
+				Math.pow(MathHelper.clamp(1 - (distance - 3) / 125, 0, 1), 3));
 		public final SoundEvent sfx;
 		public final BiFunction<Float, Double, Double> attentuationFunction;
 
@@ -252,7 +252,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 							HBMSoundEvents.overload,
 							SoundCategory.BLOCKS,pos.getX()+.5f,pos.getY()+.5f,pos.getZ()+.5f,
 							1f,1
-					).setCustomAttentuation((intended,distance)->Math.pow(MathHelper.clamp(1-(distance-20)/300,0,1),6.66))
+					).setCustomAttentuation((intended,distance)->Math.pow(MathHelper.clamp(1-(distance-50)/500,0,1),6.66))
 					.setLooped(false);
 			explosionsSFX = MainRegistry.proxy.getLoopedSound(
 							HBMSoundEvents.longexplosion,
@@ -341,7 +341,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 			}
 			expellingSpk = 0;
 
-			if (inventory.getStackInSlot(1).getItem() instanceof ItemAMSCore /*&& tanks[0].getFluid() != null && tanks[1].getFluid() != null*/) {
+			if (inventory.getStackInSlot(1).getItem() instanceof ItemAMSCore || inventory.getStackInSlot(1).getItem() == ModItems.glitch /*&& tanks[0].getFluid() != null && tanks[1].getFluid() != null*/) {
 				if (tagA != null && tagB != null) {
 					meltingPoint = Math.min(1500000, Math.min(ItemCatalyst.getMelting(catalystA), ItemCatalyst.getMelting(catalystB)));
 
@@ -795,7 +795,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 			heat = 0;
 			stabilization = 0;
 			if (this.collapsing > 0) {
-				List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null,LeafiaHelper.getAABBRadius(LeafiaHelper.getBlockPosCenter(this.pos),getPullRange()));
+				List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null,LeafiaUtil.getAABBRadius(LeafiaUtil.getBlockPosCenter(this.pos),getPullRange()));
 				for (Entity e : list) {
 					if (!(e instanceof EntityFallingBlock))
 						pull(e);
@@ -864,7 +864,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 	@SideOnly(Side.CLIENT)
 	void pullLocal() {
 		pull(Minecraft.getMinecraft().player);
-		Vec3d p = LeafiaHelper.getBlockPosCenter(pos);
+		Vec3d p = LeafiaUtil.getBlockPosCenter(pos);
 		VacuumInstance vacuum = new VacuumInstance(p,0,10,getPullRange(),0.1);
 		p = new FiaMatrix(p).rotateY(world.rand.nextDouble()*360).rotateX(world.rand.nextDouble()*360).translate(0,0,world.rand.nextDouble()*getPullRange()).position;
 
@@ -884,8 +884,8 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 	public void shock() {
 		double rlen = 1;
 		double length = 0.5;
-		Vec3d core = LeafiaHelper.getBlockPosCenter(pos);
-		Vec3d p0 = LeafiaHelper.getBlockPosCenter(pos);
+		Vec3d core = LeafiaUtil.getBlockPosCenter(pos);
+		Vec3d p0 = LeafiaUtil.getBlockPosCenter(pos);
 		Vec3d p1 = new FiaMatrix(p0).rotateY(world.rand.nextDouble()*360).rotateX(world.rand.nextDouble()*360).translate(0,0,length+world.rand.nextDouble()*rlen).position;
 		DFCShockPacket packet = new DFCShockPacket();
 		packet.pos = pos;
@@ -1125,14 +1125,20 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 	//TODO: move stats to the AMSCORE class
 	//Alcater: ok did that
 	public int getCorePower() {
+		if (inventory.getStackInSlot(1).getItem() == ModItems.glitch)
+			return 1500;
 		return ItemAMSCore.getPowerBase(inventory.getStackInSlot(1));
 	}
 
 	public float getCoreHeat() {
+		if (inventory.getStackInSlot(1).getItem() == ModItems.glitch)
+			return 3;
 		return ItemAMSCore.getHeatBase(inventory.getStackInSlot(1));
 	}
 
 	public float getCoreFuel() {
+		if (inventory.getStackInSlot(1).getItem() == ModItems.glitch)
+			return 3;
 		return ItemAMSCore.getFuelBase(inventory.getStackInSlot(1));
 	}
 
