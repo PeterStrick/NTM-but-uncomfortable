@@ -406,8 +406,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 
 						//temperature = Math.pow(temperature,0.9);
 						tgtTemp += Math.pow(deltaEnergy*666*catalystHeatMod,2/(1+stabilization))*(1-tempRatio/2)*coreHeatMod*Math.pow(potentialGain,0.25);//Math.pow(deltaEnergy,0.1)*5*Math.pow(potentialRelease,1.5);
-						double rdc = 1-energyRatio;
-						tgtTemp -= Math.pow(Math.abs(rdc),0.5)*Math.signum(rdc)*tempRatio;//*10;
+
 
 
 
@@ -446,6 +445,8 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable, 
 						containedEnergy = Math.max(containedEnergy,0);
 						LeafiaDebug.debugLog(world,"Contained 3: "+containedEnergy);
 						double targetEnergy = Math.pow(containedEnergy,0.99);
+						double rdc = 1-energyRatio;
+						tgtTemp -= Math.pow(Math.abs(rdc),0.5)*Math.signum(rdc)*tempRatio;//*10;
 						//double deltaSubEnergy = containedEnergy-targetEnergy; what's the point??
 						//Tracker._tracePosition(this,pos.down(5),"deltaSubEnergy: ",deltaSubEnergy);
 						//containedEnergy -= deltaSubEnergy*Math.pow(Math.max(0,1-energyRatio),0.25);
