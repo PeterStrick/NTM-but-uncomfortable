@@ -228,7 +228,7 @@ public class TileEntityFEL extends TileEntityMachineBase implements ITickable, I
 								BlockPos p = new BlockPos(x,y,z);
 								TileEntity te = world.getTileEntity(p);
 								if (te instanceof TileEntityCore core) {
-									double scale = 1;
+									double scale = 0.4;
 									double power = (powerReq * ((mode.ordinal() == 0) ? 0 : Math.pow(4, mode.ordinal())))/5000;
 									core.incomingSpk = core.incomingSpk + power;
 									switch(this.mode) {
