@@ -41,6 +41,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class LeafiaDebug {
+	static final boolean debugMode = false;
 	static boolean flagDebugger = false;
 	public static void flagDebug() { flagDebugger = true; }
 	public static void debugLog(World world,Object text) {
@@ -51,6 +52,8 @@ public class LeafiaDebug {
 			prefix = TextFormatting.GOLD+"[VISUAL] ";
 		flagDebugger = false;
 		sendMessage(world,new TextComponentString(prefix + TextFormatting.RESET + text.toString()));
+		if (debugMode)
+			System.out.println(prefix+TextFormatting.RESET+text.toString());
 	}
 	static void sendMessage(World world,ITextComponent component) {
 		for (EntityPlayer plr : world.playerEntities) {
