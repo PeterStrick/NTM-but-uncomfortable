@@ -40,7 +40,7 @@ public class BlockStorageCrateRadResistant extends BlockStorageCrate implements 
 	@Override
 	public void addInformation(ItemStack stack, World player, List<String> tooltip, ITooltipFlag advanced) {
 		if (this == ModBlocks.crate_tungsten)
-			tooltip.add(TextFormatting.RED+"Used for DFC Crate Recipes, does not have many slots.");
+			tooltip.add(TextFormatting.RED+I18nUtil.resolveKey("tile.crate_tungsten.desc"));
 		super.addInformation(stack, player, tooltip, advanced);
 		tooltip.add("§2[" + I18nUtil.resolveKey("trait.radshield") + "]");
 		float hardness = this.getExplosionResistance(null);

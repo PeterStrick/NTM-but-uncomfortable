@@ -4734,6 +4734,7 @@ tile.crate_metal.name=Machine Crate
 tile.crate_red.name=Red Crate
 tile.crate_steel.name=Steel Crate
 tile.crate_tungsten.name=Tungsten Crate
+tile.crate_tungsten.desc=Used for DFC Crate Recipes, does not have more slots.
 tile.crate_weapon.name=Weapon Crate
 tile.crystal_hardened.name=Hardened Dark Crystal
 tile.crystal_pulsar.name=Pulsating Crystal

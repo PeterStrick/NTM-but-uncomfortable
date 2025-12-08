@@ -50,6 +50,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class NTMStructBuffer {
+    private static final MethodHandle fillSpaceHandle;
+
+    static {
+        try {
+            Method reflected = BlockDummyable.class.getDeclaredMethod("fillSpace",World.class,int.class,int.class,int.class,ForgeDirection.class,int.class);
+            reflected.setAccessible(true);
+            fillSpaceHandle= MethodHandles.lookup().unreflect(reflected);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new LeafiaDevFlaw(e);
+        }
+    }
+
 	public enum NTMStructVersion {
 		V0_FIRST_TEST,
 		V1_REPLACEMENT_MAP_ADDITION,
@@ -383,7 +395,6 @@ public class NTMStructBuffer {
 		rotation = NTMStructAngle.values()[Math.floorMod(face.getHorizontalIndex()-originalFace.getHorizontalIndex(),4)];
 		return this;
 	}
-	Map<BlockDummyable,MethodHandle> methodMap = new HashMap<>();
 	public boolean terrarinAware = false; // name idea: movblock
 	public void build(World world,BlockPos origin) {
 		buf.readerIndex = bitNeedle;
@@ -411,12 +422,18 @@ public class NTMStructBuffer {
 				else {
 					if (modifier == 0b10) property.replaceAirOnly = true;
 					Block block = paletteBlock[buf.readUnsignedShort()];
-					if (block == null)
-						block = Blocks.AIR;
+					int meta = -1;
 					if ((value>>>15&1) > 0)
-						property.state = block.getStateFromMeta(version.isNewerThan(NTMStructVersion.V3_METADATA_FIX) ? buf.extract(4) : buf.readInt());
-					else
+						meta = version.isUpOrNewerThan(NTMStructVersion.V3_METADATA_FIX) ? buf.extract(4) : buf.readInt();
+					if (block == null) {
+						block = Blocks.AIR;
 						property.state = block.getDefaultState();
+					} else {
+						if (meta != -1)
+							property.state = block.getStateFromMeta(meta);
+						else
+							property.state = block.getDefaultState();
+					}
 					if (modifier == 0b11)
 						property.entity = buf.readUnsignedShort();
 					for (IProperty<?> key : property.state.getPropertyKeys()) {
@@ -449,30 +466,22 @@ public class NTMStructBuffer {
 						world.setBlockState(pos,newBlock.getDefaultState(),0b00010);
 				} else if (block instanceof BlockDummyable dummyable) {
 					int meta = property.state.getValue(BlockDummyable.META);
-					EnumFacing dir = ForgeDirection.getOrientation(meta-BlockDummyable.offset).toEnumFacing();
-					dir = switch(rotation) {
-						case RIGHT -> dir.rotateY();
-						case BACK -> dir.getOpposite();
-						case LEFT -> dir.getOpposite().rotateY();
-						default -> dir;
-					};
-					world.setBlockState(pos,dummyable.getStateFromMeta(ForgeDirection.getOrientation(dir).ordinal()+BlockDummyable.offset),0b00010);
-					MethodHandle fillSpace = methodMap.get(dummyable);
-					if (fillSpace == null) {
+					if (meta >= 12) {
+						EnumFacing dir = ForgeDirection.getOrientation(meta-BlockDummyable.offset).toEnumFacing();
+						dir = switch(rotation) {
+							case RIGHT -> dir.rotateY();
+							case BACK -> dir.getOpposite();
+							case LEFT -> dir.getOpposite().rotateY();
+							default -> dir;
+						};
+						world.setBlockState(pos,dummyable.getStateFromMeta(ForgeDirection.getOrientation(dir).ordinal()+BlockDummyable.offset),0b00010);
 						try {
-							Method reflected = dummyable.getClass().getDeclaredMethod("fillSpace",World.class,int.class,int.class,int.class,ForgeDirection.class,int.class);
-							reflected.setAccessible(true);
-							fillSpace = MethodHandles.lookup().unreflect(reflected);
-							methodMap.put(dummyable,fillSpace);
-						} catch (NoSuchMethodException | IllegalAccessException e) {
+							// thanks movblock
+							BlockPos pos1 = pos.offset(dir,-dummyable.getOffset());
+							fillSpaceHandle.invokeExact((BlockDummyable) dummyable,(World) world,pos1.getX(),pos1.getY(),pos1.getZ(),ForgeDirection.getOrientation(dir),dummyable.getOffset());
+						} catch (Throwable e) {
 							throw new LeafiaDevFlaw(e);
 						}
-					}
-					try {
-						BlockPos pos1 = pos.offset(dir,-dummyable.getOffset());
-						fillSpace.invokeExact((BlockDummyable)dummyable,world,pos1.getX(),pos1.getY(),pos1.getZ(),ForgeDirection.getOrientation(dir),dummyable.getOffset());
-					} catch (Throwable e) {
-						throw new LeafiaDevFlaw(e);
 					}
 				} else
 					world.setBlockState(pos,property.state,0b00010);
@@ -487,9 +496,8 @@ public class NTMStructBuffer {
 				BlockPos pos = te.getPos();
 				te.deserializeNBT(entry.getValue());
 				te.setPos(pos);
-			} else
-				throw new LeafiaDevFlaw("Tile entity could not be created");
+			} //else
+				//throw new LeafiaDevFlaw("Tile entity could not be created");
 		}
-		methodMap.clear();
 	}
 }
