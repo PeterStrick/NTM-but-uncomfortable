@@ -1041,7 +1041,9 @@ public class MainRegistry {
 		FluidCombustionRecipes.registerFluidCombustionRecipes();
 		HbmDetox.init();
 
-		StructLoader.init();
+		if (proxy instanceof ClientProxy) {
+			StructLoader.init();
+		}
 
 		FluidContainerRegistry.registerContainer(Item.getItemFromBlock(ModBlocks.lox_barrel), ModItems.tank_steel, new FluidStack(ModForgeFluids.OXYGEN, 10000));
 		FluidContainerRegistry.registerContainer(Item.getItemFromBlock(ModBlocks.pink_barrel), ModItems.tank_steel, new FluidStack(ModForgeFluids.KEROSENE, 10000));
