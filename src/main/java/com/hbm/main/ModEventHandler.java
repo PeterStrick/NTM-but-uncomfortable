@@ -1002,7 +1002,7 @@ public class ModEventHandler {
 			}
 			
 			if(HTTPHandler.optifine){
-				e.player.sendMessage(new TextComponentString("Optifine detected, may cause compatibility issues. Check log for details."));
+				//e.player.sendMessage(new TextComponentString("Optifine detected, may cause compatibility issues. Check log for details."));
 			}
 			if(GeneralConfig.duckButton){
 				if(e.player instanceof EntityPlayerMP && !e.player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getBoolean("hasDucked")){

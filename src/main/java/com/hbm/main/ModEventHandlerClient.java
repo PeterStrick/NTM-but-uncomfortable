@@ -226,17 +226,17 @@ public class ModEventHandlerClient {
 		if (seenWarning) return;
 		if (!optifineWarning && !backupsWarning) return;
 		if (event.getGui() instanceof net.minecraft.client.gui.GuiMainMenu) {
-			if (optifineWarning)
-				GuiCTMWarning.text.add("Optifine is recommended as it magically fixes rendering stuff.");
-			if (backupsWarning) {
-				GuiCTMWarning.text.add("Backups is "+(optifineWarning ? "also " : "")+"recommended as the mod is highly unstable.");
-				GuiCTMWarning.downloadButtonIndex = GuiCTMWarning.text.size();
-				GuiCTMWarning.text.add("Click to download Backups");
-			}
-			GuiCTMWarning.text.add("");
-			GuiCTMWarning.text.add("Press any key to continue");
-			Minecraft.getMinecraft().displayGuiScreen(new GuiCTMWarning());
-			seenWarning = true;
+			// if (optifineWarning)
+			// 	GuiCTMWarning.text.add("Optifine is recommended as it magically fixes rendering stuff.");
+			// if (backupsWarning) {
+			// 	GuiCTMWarning.text.add("Backups is "+(optifineWarning ? "also " : "")+"recommended as the mod is highly unstable.");
+			// 	GuiCTMWarning.downloadButtonIndex = GuiCTMWarning.text.size();
+			// 	GuiCTMWarning.text.add("Click to download Backups");
+			// }
+			// GuiCTMWarning.text.add("");
+			// GuiCTMWarning.text.add("Press any key to continue");
+			// Minecraft.getMinecraft().displayGuiScreen(new GuiCTMWarning());
+			// seenWarning = true;
 		}
 	}
 	

@@ -55,7 +55,7 @@ public class HTTPHandler {
 	        ex.printStackTrace();
 	    }
 	    if(optifine){
-	    	MainRegistry.logger.warn("Optifine present. This may cause compatibility with NTM's shaders!\n If experiencing issues, turn the enableShaders2 option in the config to false in order to disable them.");
+	    	//MainRegistry.logger.warn("Optifine present. This may cause compatibility with NTM's shaders!\n If experiencing issues, turn the enableShaders2 option in the config to false in order to disable them.");
 	    }
 	}
 
