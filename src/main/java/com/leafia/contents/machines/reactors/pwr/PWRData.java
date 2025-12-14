@@ -457,7 +457,13 @@ public class PWRData implements ITickable, IFluidHandler, ITankPacketAcceptor, L
 		if (getWorld().isRemote) {
 			//Minecraft.getMinecraft().player.sendMessage(new TextComponentString("hello... here at "+companion.getPos()+".. ,,uwu,,"));
 			// The debug code above is a serious sign of mental illness.
-			warnTicks = Math.floorMod(warnTicks + 1, 8);
+
+			try {
+				warnTicks = Math.floorMod(warnTicks + 1, 8); // This is null sometimes for no reason
+			} catch (Exception e) {
+				// Gracefail :3
+			}
+
 		} else {
 			//for (EntityPlayer player : getWorld().playerEntities) {
 			//    player.sendMessage(new TextComponentString("" + getWorld().isRemote + "! Im at " + companion.getPos()));
